@@ -1,7 +1,7 @@
 ---
 type: eda
 tags:
-  - 说明书
+  - 手册
 tool: Obsidian
 created: 2026-08-04
 ---
