@@ -1,3 +1,5 @@
 {
-  "enabledCssSnippets": []
+  "enabledCssSnippets": [],
+  "showViewHeader": true,
+  "theme": "obsidian"
 }
