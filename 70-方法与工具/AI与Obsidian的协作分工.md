@@ -11,11 +11,13 @@ created: 2026-10-16
 
 让 AI 直接读写这个库，不需要装 MCP、也不需要专用"整理插件"——**连接层用官方 CLI（或直接读文件），整理层靠一套写进库里的落笔规范**。
 
+分工一句话：**CLI 给 AI 用，规范约束 AI，人只负责放行和判断值不值得记**。
+
 ## 为什么需要它？
 
 原本的痛点不是"笔记不够整齐"，而是：**和我讨论/学习时产生的那些结论，会随着对话消失**。它们既不在教材里，也不在我事后愿意重新整理的东西里。
 
-所以真正要建的不是"一次性整理工具"，而是一条**长期工作流**：随聊随判断，值得记的立刻落笔进库。
+所以真正要建的不是"一次性整理工具"，而是一条**长期工作流**：讨论照常进行，我说"这个记到 Obsidian 里"，AI 先确认落点、再把它整理落库。
 
 ## 两层结构（关键结论）
 
@@ -23,14 +25,14 @@ created: 2026-10-16
 
 | 层 | 作用 | 候选方案 | 本机状态 |
 | --- | --- | --- | --- |
-| **连接层** | 让 AI 能读写库 | 官方 `obsidian` CLI | 未启用（缺 `Obsidian.com` 转发器） |
-| | | `notesmd-cli`（Go 无头 CLI，不用开 Obsidian） | 未装 |
+| **连接层** | 让 AI 能读写库 | 官方 `obsidian` CLI | ✅ **2026-10-17 已启用**（需 Obsidian 正在运行） |
+| | | `notesmd-cli`（Go 无头 CLI，不用开 Obsidian） | 未装（无头需求已被文件读写覆盖） |
 | | | MCP（mcp-obsidian 走 Local REST API 插件） | 未配，**不需要** |
-| | | **直接文件读写** | ✅ 已可用，够用 |
+| | | **直接文件读写** | ✅ 已可用，**仍是默认手段** |
 | **整理层** | 决定"记什么、放哪、怎么写、怎么链" | 通用技能（obsidian-cli / obsidian-markdown / obsidian-bases / json-canvas） | 有，但不认识本库的编号目录与词表 |
 | | | **本库专属落笔规范** | ✅ 已建立，见下 |
 
-**结论：连接层没装工具也能开工**（直接文件读写），真正缺的是整理层——因为"放哪个目录、用什么标签、要不要记"这些判断，通用工具给不了。
+**结论：整理层才是关键**——"放哪个目录、用什么标签、要不要记"这些判断，通用工具给不了。连接层当初没装工具也照样开工（直接文件读写就够），现在 CLI 装上了，它换来的是**库的索引视图**（检索 / 反链 / 标签统计），不是"能写"。
 
 ## 落地物
 
@@ -45,40 +47,47 @@ created: 2026-10-16
 - **质量标准**：三个月后回看，30 秒内能想起核心要点
 - **Frontmatter 字段词表** + **标签词表**（`#课程/xxx`、`#学期/大二上`、`#踩坑`、`#需要更新`、`#todo` 这套，禁止造同义词）
 - **五种笔记模板**，对齐 `20-微电子/Templates/tpl-*.md`
-- **交付节奏**：**AI 提名、我放行**——先列出"准备记这几条"和目标路径，确认后再写
+- **交付节奏**：**我说记，它才记**——而且我说的"记一下"可能只是让它记进智能体长期记忆，不等于建笔记。所以流程是三步：**用户发起 → agent 请求确认（记进记忆还是写成 Obsidian 笔记）→ 用户放行**。落点确认为写库后，它列出"准备记哪几条 + 目标路径"，一次确认再写
 
 ### 2. 反向链接
 
 本文件与 [[库说明]] 互链；方法论层面接 [[微电子学习笔记方法论]]（"压缩重建"而非摘抄那条原则，就是从那里继承的）。
 
-## 官方 CLI 怎么开（等要用的时候）
+## 连接层怎么用（CLI 已就绪，2026-10-17）
 
-1. Obsidian → **设置 → 通用 → 命令行界面** → 启用 → 勾"注册到 PATH"
-2. 该动作会在安装目录（`D:\Users\29021\AppData\Local\Programs\Obsidian\`）生成 `Obsidian.com` —— 这是 Windows 上的终端转发器，**没有它就等于 CLI 没启用**（Obsidian 是 GUI 程序，命令行参数必须靠它转发）
-3. 之后 `obsidian` 命令即可用，但**必须让 Obsidian 正在运行**
+**谁用、为什么用**：CLI 是**给 AI 用的**，我自己不用敲——这条工作流的本质是"AI 把该记的东西写进库"。所以工具就位与否，是 AI 的事。
 
-开好后的常用钩子（比让 AI 全库扫描省得多）：
+**什么时候用哪条路**：
+
+| 场景 | 走哪条 |
+| --- | --- |
+| 写新笔记、改正文、查 `[[wikilink]]` 是否指向真实文件 | **直接文件读写**（默认，不依赖 Obsidian 开着） |
+| 要"库自己的索引"：检索、反链、标签统计、取当日日记 | **官方 CLI** |
+
+CLI 命令由 AI 自己执行即可（`obsidian` 已在 PATH 里），常用几个：
 
 ```bash
-obsidian search query="关键词" limit=10    # 检索
-obsidian read file="笔记名"                 # 读单篇
-obsidian append file="笔记名" content="..."  # 追加
+obsidian search query="关键词" limit=10      # 走 Obsidian 自己的索引检索
+obsidian read path="70-方法与工具/xxx.md"     # 读单篇
+obsidian append path="..." content="..."     # 追加
 obsidian create name="新笔记" content="# 标题" template="模板名" silent
-obsidian tags sort=count counts             # 查标签词表（落笔前用）
-obsidian backlinks file="笔记名"             # 查反链（改名前用）
-obsidian daily:append content="- [ ] 待办"   # 追加到今日日记
+obsidian tags sort=count counts              # 落笔前查标签词表
+obsidian backlinks path="..."                # 改名前查反链
+obsidian daily:append content="- [ ] 待办"    # 追加到今日日记
 ```
 
-`file=` 按 wikilink 规则解析（名字即可，不用路径和后缀）；`path=` 才是从库根起的精确路径。多库时用 `vault="库名"` 指定。
+`file=` 按 wikilink 规则解析（名字即可）；`path=` 才是从库根起的精确路径；值里有空格要加引号。**硬约束：Obsidian 必须正在运行**，否则 CLI 直接报错——这种时候静默回落到文件读写就行，不要卡住。
 
-**没装 CLI 时的替代**：`notesmd-cli`（Go 写，走文件系统，不需要 Obsidian 运行）。Scoop：`scoop bucket add scoop-yakitrak https://github.com/Yakitrak/scoop-yakitrak.git` 然后 `scoop install notesmd-cli`。
+启用过程的踩坑与复现记录：[[启用 Obsidian CLI（Windows实操）]]。
+
+**无头替代**：`notesmd-cli`（Go 写，走文件系统，不需要 Obsidian 运行）。Scoop：`scoop bucket add scoop-yakitrak https://github.com/Yakitrak/scoop-yakitrak.git` 然后 `scoop install notesmd-cli`。目前没装，也没需求。
 
 ## 踩过的坑
 
 - **别全库读进上下文**：157 篇 `.md` 全读一遍是六位数 token 的量级。检索阶段只读 `00-入口/库说明.md` + 目标目录的少量相关篇。
 - **写笔记不要留 templater 语法**：模板里的 `created: <% tp.date.now("YYYY-MM-DD") %>` 是给 Obsidian 内部用的，用文件系统直接写入时要填真实日期。
 - **表格分隔行不夹空格**：`|------|------|` 正确，`| ------ | ---- |` 会被 dataview 误解析成行内字段而报错，详见 [[Dataview表格解析冲突]]（**这条已按原文更正，见下**）。
-- **不要手动 commit/push**：obsidian-git 每 15 分钟自动本地提交，推送由我在命令面板手动执行（推前自动 rebase 拉取）。
+- **不要手动 commit/push**：obsidian-git 每 15 分钟自动本地提交，推送由使用者在命令面板手动执行（推前自动 rebase 拉取）。
 
 ## 自查更正（同日）
 
@@ -93,5 +102,6 @@ obsidian daily:append content="- [ ] 待办"   # 追加到今日日记
 
 ← [[库说明]]（目录结构与同步方式）
 → [[AI当笔记架构师的工作方法]]（规范是怎么定出来的：先实测再定规范 + 写入的三条边界）
+→ [[AI整理进Obsidian的实测验收]]（这套东西到底跑通没有：全链路自检结果 + 还没证过的三件事）
 → [[微电子学习笔记方法论]]（落笔的质量标准来自这里）
 → [[Dataview表格解析冲突]]（写表格时的硬约束）
