@@ -203,8 +203,8 @@ async function getTemplateInfo(template) {
         return [contents, IFoldInfo];
     }
     catch (err) {
-        console.error(`无法读取日记模板 '${templatePath}'`, err);
-        new obsidian__default['default'].Notice("读取日记模板失败");
+        console.error(`Failed to read the daily note template '${templatePath}'`, err);
+        new obsidian__default['default'].Notice("Failed to read the daily note template");
         return ["", null];
     }
 }
@@ -253,8 +253,8 @@ async function createDailyNote(date) {
         return createdFile;
     }
     catch (err) {
-        console.error(`创建文件失败：'${normalizedPath}'`, err);
-        new obsidian__default['default'].Notice("无法创建新文件。");
+        console.error(`Failed to create file: '${normalizedPath}'`, err);
+        new obsidian__default['default'].Notice("Unable to create new file.");
     }
 }
 function getDailyNote(date, dailyNotes) {
@@ -341,8 +341,8 @@ async function createWeeklyNote(date) {
         return createdFile;
     }
     catch (err) {
-        console.error(`创建文件失败：'${normalizedPath}'`, err);
-        new obsidian__default['default'].Notice("无法创建新文件。");
+        console.error(`Failed to create file: '${normalizedPath}'`, err);
+        new obsidian__default['default'].Notice("Unable to create new file.");
     }
 }
 function getWeeklyNote(date, weeklyNotes) {
@@ -760,16 +760,16 @@ class CalendarSettingsTab extends obsidian.PluginSettingTab {
         if (!appHasDailyNotesPluginLoaded_1()) {
             this.containerEl.createDiv("settings-banner", (banner) => {
                 banner.createEl("h3", {
-                    text: "⚠️ 未启用日记插件",
+                    text: "⚠️ Daily Notes plugin not enabled",
                 });
                 banner.createEl("p", {
                     cls: "setting-item-description",
-                    text: "日历插件最好与日记插件或 Periodic Notes 插件（可在第三方插件中找到）结合使用。",
+                    text: "The calendar is best used in conjunction with either the Daily Notes plugin or the Periodic Notes plugin (available in the Community Plugins catalog).",
                 });
             });
         }
         this.containerEl.createEl("h3", {
-            text: "常规设置",
+            text: "General Settings",
         });
         this.addDotThresholdSetting();
         this.addWeekStartSetting();
@@ -778,25 +778,25 @@ class CalendarSettingsTab extends obsidian.PluginSettingTab {
         if (this.plugin.options.showWeeklyNote &&
             !appHasPeriodicNotesPluginLoaded()) {
             this.containerEl.createEl("h3", {
-                text: "每周笔记设置",
+                text: "Weekly Note Settings",
             });
             this.containerEl.createEl("p", {
                 cls: "setting-item-description",
-                text: "注意：“每周笔记 ”设置正在移动。我们建议您安装 “Periodic Notes ”插件，以便将来保留该功能。",
+                text: "Note: Weekly Note settings are moving. You are encouraged to install the 'Periodic Notes' plugin to keep the functionality in the future.",
             });
             this.addWeeklyNoteFormatSetting();
             this.addWeeklyNoteTemplateSetting();
             this.addWeeklyNoteFolderSetting();
         }
         this.containerEl.createEl("h3", {
-            text: "高级设置",
+            text: "Advanced Settings",
         });
         this.addLocaleOverrideSetting();
     }
     addDotThresholdSetting() {
         new obsidian.Setting(this.containerEl)
-            .setName("每个点表示的字数（即统计日记的字数）")
-            .setDesc("一个点表示多少个字？")
+            .setName("Words per dot")
+            .setDesc("How many words should be represented by a single dot?")
             .addText((textfield) => {
             textfield.setPlaceholder(String(DEFAULT_WORDS_PER_DOT));
             textfield.inputEl.type = "number";
@@ -814,8 +814,8 @@ class CalendarSettingsTab extends obsidian.PluginSettingTab {
         const localeWeekStartNum = window._bundledLocaleWeekSpec.dow;
         const localeWeekStart = moment.weekdays()[localeWeekStartNum];
         new obsidian.Setting(this.containerEl)
-            .setName("从周几开始：")
-            .setDesc("选择每周的起始日。选择“本地默认”以使用 moment.js 指定的默认值。")
+            .setName("Start week on:")
+            .setDesc("Choose what day of the week to start. Select 'Locale default' to use the default specified by moment.js")
             .addDropdown((dropdown) => {
             dropdown.addOption("locale", `Locale default (${localeWeekStart})`);
             localizedWeekdays.forEach((day, i) => {
@@ -831,8 +831,8 @@ class CalendarSettingsTab extends obsidian.PluginSettingTab {
     }
     addConfirmCreateSetting() {
         new obsidian.Setting(this.containerEl)
-            .setName("在创建新笔记前确认")
-            .setDesc("在创建新笔记前显示确认对话框")
+            .setName("Confirm before creating new note")
+            .setDesc("Show a confirmation modal before creating a new note")
             .addToggle((toggle) => {
             toggle.setValue(this.plugin.options.shouldConfirmBeforeCreate);
             toggle.onChange(async (value) => {
@@ -844,8 +844,8 @@ class CalendarSettingsTab extends obsidian.PluginSettingTab {
     }
     addShowWeeklyNoteSetting() {
         new obsidian.Setting(this.containerEl)
-            .setName("显示周数")
-            .setDesc("启用此选项以添加一周编号列")
+            .setName("Show week number")
+            .setDesc("Enable this to add a column with the week number")
             .addToggle((toggle) => {
             toggle.setValue(this.plugin.options.showWeeklyNote);
             toggle.onChange(async (value) => {
@@ -856,8 +856,8 @@ class CalendarSettingsTab extends obsidian.PluginSettingTab {
     }
     addWeeklyNoteFormatSetting() {
         new obsidian.Setting(this.containerEl)
-            .setName("周笔记格式")
-            .setDesc("如需更多语法帮助，请参阅格式参考。")
+            .setName("Weekly note format")
+            .setDesc("For more syntax help, refer to format reference")
             .addText((textfield) => {
             textfield.setValue(this.plugin.options.weeklyNoteFormat);
             textfield.setPlaceholder(DEFAULT_WEEK_FORMAT);
@@ -868,8 +868,8 @@ class CalendarSettingsTab extends obsidian.PluginSettingTab {
     }
     addWeeklyNoteTemplateSetting() {
         new obsidian.Setting(this.containerEl)
-            .setName("周笔记模板")
-            .setDesc("选择要作为每周笔记模板的文件")
+            .setName("Weekly note template")
+            .setDesc("Choose the file you want to use as the template for your weekly notes")
             .addText((textfield) => {
             textfield.setValue(this.plugin.options.weeklyNoteTemplate);
             textfield.onChange(async (value) => {
@@ -879,8 +879,8 @@ class CalendarSettingsTab extends obsidian.PluginSettingTab {
     }
     addWeeklyNoteFolderSetting() {
         new obsidian.Setting(this.containerEl)
-            .setName("每周笔记文件夹")
-            .setDesc("新的周笔记将放在这里")
+            .setName("Weekly note folder")
+            .setDesc("New weekly notes will be placed here")
             .addText((textfield) => {
             textfield.setValue(this.plugin.options.weeklyNoteFolder);
             textfield.onChange(async (value) => {
@@ -893,8 +893,8 @@ class CalendarSettingsTab extends obsidian.PluginSettingTab {
         const { moment } = window;
         const sysLocale = (_a = navigator.language) === null || _a === void 0 ? void 0 : _a.toLowerCase();
         new obsidian.Setting(this.containerEl)
-            .setName("覆盖地区设置：")
-            .setDesc("如果你想使用默认语言以外的语言，请设置此选项")
+            .setName("Override locale:")
+            .setDesc("Set this if you want to use a locale different from the default")
             .addDropdown((dropdown) => {
             dropdown.addOption("system-default", `Same as system (${sysLocale})`);
             moment.locales().forEach((locale) => {
@@ -976,7 +976,7 @@ function createDailyNotesStore() {
             catch (err) {
                 if (!hasError) {
                     // Avoid error being shown multiple times
-                    console.log("[Calendar] 找不到每日笔记文件夹", err);
+                    console.log("[Calendar] Failed to find daily notes folder", err);
                 }
                 store.set({});
                 hasError = true;
@@ -995,7 +995,7 @@ function createWeeklyNotesStore() {
             catch (err) {
                 if (!hasError) {
                     // Avoid error being shown multiple times
-                    console.log("[Calendar] 找不到每周笔记文件夹", err);
+                    console.log("[Calendar] Failed to find weekly notes folder", err);
                 }
                 store.set({});
                 hasError = true;
@@ -1022,7 +1022,7 @@ class ConfirmationModal extends obsidian.Modal {
         this.contentEl.createEl("p", { text });
         this.contentEl.createDiv("modal-button-container", (buttonsEl) => {
             buttonsEl
-                .createEl("button", { text: "取消" })
+                .createEl("button", { text: "Never mind" })
                 .addEventListener("click", () => this.close());
             buttonsEl
                 .createEl("button", {
@@ -1057,10 +1057,10 @@ async function tryToCreateDailyNote(date, inNewSplit, settings, cb) {
     };
     if (settings.shouldConfirmBeforeCreate) {
         createConfirmationDialog({
-            cta: "创建",
+            cta: "Create",
             onAccept: createFile,
-            text: `文件 ${filename} 不存在。您想创建它吗？`,
-            title: "新的日记",
+            text: `File ${filename} does not exist. Would you like to create it?`,
+            title: "New Daily Note",
         });
     }
     else {
@@ -1085,10 +1085,10 @@ async function tryToCreateWeeklyNote(date, inNewSplit, settings, cb) {
     };
     if (settings.shouldConfirmBeforeCreate) {
         createConfirmationDialog({
-            cta: "创建",
+            cta: "Create",
             onAccept: createFile,
-            text: `文件 ${filename} 不存在。您想创建它吗？`,
-            title: "新的周记",
+            text: `File ${filename} does not exist. Would you like to create it?`,
+            title: "New Weekly Note",
         });
     }
     else {
@@ -4018,7 +4018,7 @@ class Calendar extends SvelteComponent$1 {
 function showFileMenu(app, file, position) {
     const fileMenu = new obsidian.Menu(app);
     fileMenu.addItem((item) => item
-        .setTitle("删除")
+        .setTitle("Delete")
         .setIcon("trash")
         .onClick(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -4401,7 +4401,7 @@ class CalendarPlugin extends obsidian.Plugin {
         this.registerView(VIEW_TYPE_CALENDAR, (leaf) => (this.view = new CalendarView(leaf)));
         this.addCommand({
             id: "show-calendar-view",
-            name: "打开视图",
+            name: "Open view",
             checkCallback: (checking) => {
                 if (checking) {
                     return (this.app.workspace.getLeavesOfType(VIEW_TYPE_CALENDAR).length === 0);
@@ -4411,7 +4411,7 @@ class CalendarPlugin extends obsidian.Plugin {
         });
         this.addCommand({
             id: "open-weekly-note",
-            name: "打开每周笔记",
+            name: "Open Weekly Note",
             checkCallback: (checking) => {
                 if (checking) {
                     return !appHasPeriodicNotesPluginLoaded();
@@ -4421,7 +4421,7 @@ class CalendarPlugin extends obsidian.Plugin {
         });
         this.addCommand({
             id: "reveal-active-note",
-            name: "显示活动笔记",
+            name: "Reveal active note",
             callback: () => this.view.revealActiveNote(),
         });
         await this.loadOptions();
