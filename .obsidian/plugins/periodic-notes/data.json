@@ -4,32 +4,32 @@
   "hasMigratedWeeklyNoteSettings": true,
   "daily": {
     "format": "YYYY-MM-DD",
-    "template": "50-日记/模板/日记模板.md",
-    "folder": "50-日记/日记",
+    "template": "日记/模板/日记模板.md",
+    "folder": "日记/日记",
     "enabled": true
   },
   "weekly": {
     "format": "gggg-[W]ww",
-    "template": "50-日记/模板/周记模板.md",
-    "folder": "50-日记/周记",
+    "template": "日记/模板/周记模板.md",
+    "folder": "日记/周记",
     "enabled": true
   },
   "monthly": {
     "format": "YYYY-MM",
-    "template": "50-日记/模板/月度笔记模板.md",
-    "folder": "50-日记/月度",
+    "template": "日记/模板/月度笔记模板.md",
+    "folder": "日记/月度",
     "enabled": true
   },
   "quarterly": {
     "format": "YYYY-[Q]Q",
     "template": "",
-    "folder": "50-日记/季度",
+    "folder": "日记/季度",
     "enabled": true
   },
   "yearly": {
     "format": "YYYY",
     "template": "",
-    "folder": "50-日记/年度",
+    "folder": "日记/年度",
     "enabled": true
   }
 }
