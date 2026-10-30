@@ -3,3 +3,6 @@
 .obsidian/cache/
 .trash/
 .DS_Store
+
+# i18n 插件设置里含 API key，不入库
+.obsidian/plugins/i18n/data.json

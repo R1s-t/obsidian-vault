@@ -1,0 +1,58 @@
+[
+  {
+    "id": "1793355718762",
+    "time": 1793355718762,
+    "trigger": "discovery",
+    "summary": {
+      "total": 0,
+      "success": 0,
+      "error": 0,
+      "skipped": 0,
+      "discovered": 0,
+      "upToDate": 0
+    },
+    "details": "[]"
+  },
+  {
+    "id": "1793354915663",
+    "time": 1793354915663,
+    "trigger": "discovery",
+    "summary": {
+      "total": 0,
+      "success": 0,
+      "error": 0,
+      "skipped": 0,
+      "discovered": 0,
+      "upToDate": 0
+    },
+    "details": "[]"
+  },
+  {
+    "id": "1793354591557",
+    "time": 1793354591557,
+    "trigger": "manual",
+    "summary": {
+      "total": 15,
+      "success": 4,
+      "error": 10,
+      "skipped": 1,
+      "discovered": 0,
+      "upToDate": 0
+    },
+    "details": "[{\"id\":\"calendar\",\"type\":\"plugin\",\"name\":\"calendar\",\"status\":\"success\",\"sourceRepo\":\"yunrr/obsidian-translations\",\"targetVersion\":\"2.0.0\",\"scoreBreakdown\":{\"version\":50,\"popularity\":3,\"freshness\":10,\"total\":63}},{\"id\":\"dataview\",\"type\":\"plugin\",\"name\":\"dataview\",\"status\":\"success\",\"sourceRepo\":\"yunrr/obsidian-translations\",\"targetVersion\":\"1.0.1\",\"scoreBreakdown\":{\"version\":50,\"popularity\":3,\"freshness\":10,\"total\":63}},{\"id\":\"longform\",\"type\":\"plugin\",\"name\":\"longform\",\"status\":\"success\",\"sourceRepo\":\"yunrr/obsidian-translations\",\"targetVersion\":\"1.0.1\",\"scoreBreakdown\":{\"version\":50,\"popularity\":3,\"freshness\":10,\"total\":63}},{\"id\":\"novel-word-count\",\"type\":\"plugin\",\"name\":\"novel-word-count\",\"status\":\"success\",\"sourceRepo\":\"yunrr/obsidian-translations\",\"targetVersion\":\"1.0.1\",\"scoreBreakdown\":{\"version\":0,\"popularity\":3,\"freshness\":10,\"total\":13}},{\"id\":\"obsidian-admonition\",\"type\":\"plugin\",\"name\":\"obsidian-admonition\",\"status\":\"error\",\"message\":\"Manager.Errors.ApplyFailed\"},{\"id\":\"obsidian-excalidraw-plugin\",\"type\":\"plugin\",\"name\":\"obsidian-excalidraw-plugin\",\"status\":\"error\",\"message\":\"Manager.Errors.ApplyFailed\"},{\"id\":\"obsidian-git\",\"type\":\"plugin\",\"name\":\"obsidian-git\",\"status\":\"error\",\"message\":\"Manager.Errors.ApplyFailed\"},{\"id\":\"obsidian-kanban\",\"type\":\"plugin\",\"name\":\"obsidian-kanban\",\"status\":\"error\",\"message\":\"Manager.Errors.ApplyFailed\"},{\"id\":\"obsidian-latex-suite\",\"type\":\"plugin\",\"name\":\"obsidian-latex-suite\",\"status\":\"error\",\"message\":\"Manager.Errors.ApplyFailed\"},{\"id\":\"obsidian-tasks-plugin\",\"type\":\"plugin\",\"name\":\"obsidian-tasks-plugin\",\"status\":\"error\",\"message\":\"Manager.Errors.ApplyFailed\"},{\"id\":\"periodic-notes\",\"type\":\"plugin\",\"name\":\"periodic-notes\",\"status\":\"error\",\"message\":\"Manager.Errors.ApplyFailed\"},{\"id\":\"quickadd\",\"type\":\"plugin\",\"name\":\"quickadd\",\"status\":\"error\",\"message\":\"Manager.Errors.ApplyFailed\"},{\"id\":\"tag-wrangler\",\"type\":\"plugin\",\"name\":\"tag-wrangler\",\"status\":\"error\",\"message\":\"Manager.Errors.ApplyFailed\"},{\"id\":\"templater-obsidian\",\"type\":\"plugin\",\"name\":\"templater-obsidian\",\"status\":\"error\",\"message\":\"Manager.Errors.ApplyFailed\"}]"
+  },
+  {
+    "id": "1793354577695",
+    "time": 1793354577695,
+    "trigger": "manual",
+    "summary": {
+      "total": 0,
+      "success": 0,
+      "error": 0,
+      "skipped": 0,
+      "discovered": 0,
+      "upToDate": 0
+    },
+    "details": "[]"
+  }
+]

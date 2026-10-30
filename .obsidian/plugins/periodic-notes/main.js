@@ -1682,7 +1682,7 @@ function create_if_block_3(ctx) {
 			div2 = element("div");
 			div0 = element("div");
 			h4 = element("h4");
-			h4.textContent = "Daily Notes plugin is enabled";
+			h4.textContent = "日记插件已启动";
 			t1 = space();
 			if_block0.c();
 			t2 = space();
@@ -1764,7 +1764,7 @@ function create_else_block_2(ctx) {
 	return {
 		c() {
 			p = element("p");
-			p.textContent = "You are currently using the core Daily Notes plugin. You can migrate\n            those settings over to Periodic Notes to enjoy the same\n            functionality as well as some notable improvements";
+			p.textContent = "You are currently using the core Daily Notes plugin. 你可以 migrate\n            those settings over to Periodic Notes to enjoy the same\n            functionality as well as some notable improvements";
 			attr(p, "class", "setting-item-description");
 		},
 		m(target, anchor) {
@@ -1784,8 +1784,8 @@ function create_if_block_5(ctx) {
 		c() {
 			p = element("p");
 
-			p.innerHTML = `You have successfully migrated your daily notes settings. You can
-            now disable the Daily Notes core plugin to avoid any confusion.<br/>If you have an custom hotkeys for daily notes, make sure to update
+			p.innerHTML = `您已成功迁移日常笔记设置。你可以
+            禁用 Daily Notes 核心插件以避免任何混淆。<br/>If you have an custom hotkeys for daily notes, make sure to update
             them to use the new &quot;Periodic Notes&quot; commands.`;
 
 			attr(p, "class", "setting-item-description");
@@ -2024,7 +2024,7 @@ function create_if_block$4(ctx) {
 	return {
 		c() {
 			p = element("p");
-			p.textContent = "With this plugin, you can quickly create and navigate to daily, weekly,\n      and monthly notes. Enable them below to get started.";
+			p.textContent = "通过这个插件，你可以快速的创建并管理你的日、周和月笔记。\n 启用下面的选项以开始使用。";
 		},
 		m(target, anchor) {
 			insert(target, p, anchor);
@@ -2055,7 +2055,7 @@ function create_fragment$4(ctx) {
 		c() {
 			div = element("div");
 			h3 = element("h3");
-			h3.textContent = "Getting Started";
+			h3.textContent = "让我们开始吧";
 			t1 = space();
 			if (if_block0) if_block0.c();
 			t2 = space();
@@ -2064,7 +2064,7 @@ function create_fragment$4(ctx) {
 			if (if_block2) if_block2.c();
 			t4 = space();
 			button = element("button");
-			button.textContent = "Dismiss";
+			button.textContent = "忽略";
 			attr(button, "class", "svelte-1alo0m9");
 			attr(div, "class", "settings-banner");
 		},
