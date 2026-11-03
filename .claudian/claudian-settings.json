@@ -1,0 +1,200 @@
+{
+  "userName": "",
+  "permissionMode": "auto",
+  "model": "sonnet",
+  "effortLevel": "xhigh",
+  "serviceTier": "default",
+  "enableAutoTitleGeneration": true,
+  "titleGenerationLocale": "",
+  "titleGenerationModel": "",
+  "excludedTags": [],
+  "mediaFolder": "",
+  "systemPrompt": "",
+  "sharedEnvironmentVariables": "",
+  "envSnippets": [],
+  "customContextLimits": {},
+  "keyboardNavigation": {
+    "scrollUpKey": "w",
+    "scrollDownKey": "s",
+    "focusInputKey": "i"
+  },
+  "requireCommandOrControlEnterToSend": false,
+  "locale": "en",
+  "providerConfigs": {
+    "claude": {
+      "installationMethodsByHost": {
+        "device-ad1adf45060df78a80bf88136af6420c1cc6bafe1dd73b838d34bd5cdd378708": "native-windows"
+      },
+      "wslDistroOverridesByHost": {},
+      "enabled": true,
+      "outputStyle": null,
+      "promptSuggestions": false,
+      "discoveredOutputStyles": [
+        "default",
+        "Proactive",
+        "Concise",
+        "Explanatory",
+        "Learning"
+      ],
+      "cliPath": "",
+      "cliPathsByHost": {},
+      "loadUserSettings": true,
+      "enableChrome": false,
+      "visibleModels": [
+        "sonnet",
+        "haiku"
+      ],
+      "modelAliases": {},
+      "environmentVariables": "",
+      "environmentHash": "",
+      "sessionEnvironmentHash": "",
+      "selectedModels": [
+        {
+          "value": "sonnet",
+          "label": "deepseek-v4-pro",
+          "description": "Custom Sonnet model (1M context)",
+          "resolvedModel": "deepseek-v4-pro[1M]",
+          "reasoningMetadataResolved": true,
+          "supportedEffortLevels": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        },
+        {
+          "value": "haiku",
+          "label": "deepseek-v4-flash",
+          "description": "Custom Haiku model",
+          "resolvedModel": "deepseek-v4-flash",
+          "reasoningMetadataResolved": true,
+          "supportedEffortLevels": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    },
+    "codex": {
+      "enabled": false,
+      "safeMode": "workspace-write",
+      "cliPath": "",
+      "cliPathsByHost": {},
+      "modelAliases": {},
+      "visibleModels": [],
+      "enableUltraEffort": false,
+      "responseStyle": "pragmatic",
+      "responseVerbosity": "default",
+      "reasoningSummary": "detailed",
+      "environmentVariables": "",
+      "environmentHash": "",
+      "sessionEnvironmentHash": "",
+      "installationMethodsByHost": {},
+      "wslDistroOverridesByHost": {},
+      "selectedModels": []
+    },
+    "deepseek": {
+      "installationMethodsByHost": {
+        "device-ad1adf45060df78a80bf88136af6420c1cc6bafe1dd73b838d34bd5cdd378708": "native-windows"
+      },
+      "wslDistroOverridesByHost": {},
+      "enabled": false,
+      "codeMode": false,
+      "presetPlugins": "",
+      "cliPath": "",
+      "cliPathsByHost": {},
+      "environmentVariables": "",
+      "environmentHash": "",
+      "visibleModels": [],
+      "modelAliases": {},
+      "preferredReasoningByModel": {},
+      "selectedModels": []
+    },
+    "grok": {
+      "installationMethodsByHost": {
+        "device-ad1adf45060df78a80bf88136af6420c1cc6bafe1dd73b838d34bd5cdd378708": "native-windows"
+      },
+      "wslDistroOverridesByHost": {},
+      "sessionEnvironmentHash": "",
+      "cliPath": "",
+      "cliPathsByHost": {},
+      "enabled": false,
+      "environmentHash": "",
+      "environmentVariables": "",
+      "modelAliases": {},
+      "preferredReasoningByModel": {},
+      "visibleModels": [],
+      "selectedModelsByHost": {}
+    },
+    "opencode": {
+      "installationMethodsByHost": {
+        "device-ad1adf45060df78a80bf88136af6420c1cc6bafe1dd73b838d34bd5cdd378708": "native-windows"
+      },
+      "wslDistroOverridesByHost": {},
+      "cliPath": "",
+      "cliPathsByHost": {},
+      "enabled": false,
+      "environmentHash": "",
+      "environmentVariables": "",
+      "modelAliases": {},
+      "preferredThinkingByModel": {},
+      "thinkingOptionsByModel": {},
+      "visibleModels": [],
+      "selectedModels": []
+    },
+    "pi": {
+      "installationMethodsByHost": {
+        "device-ad1adf45060df78a80bf88136af6420c1cc6bafe1dd73b838d34bd5cdd378708": "native-windows"
+      },
+      "wslDistroOverridesByHost": {},
+      "cliPath": "",
+      "cliPathsByHost": {},
+      "enabled": false,
+      "environmentHash": "",
+      "environmentVariables": "",
+      "modelAliases": {},
+      "preferredThinkingByModel": {},
+      "sessionEnvironmentHash": "",
+      "visibleModels": [],
+      "selectedModels": []
+    }
+  },
+  "settingsProvider": "claude",
+  "lastSelectedChatModel": {
+    "providerId": "claude",
+    "model": "haiku"
+  },
+  "inlineEditModel": null,
+  "savedProviderModel": {
+    "claude": "sonnet"
+  },
+  "savedProviderEffort": {
+    "claude": "xhigh"
+  },
+  "savedProviderServiceTier": {},
+  "savedProviderPermissionMode": {
+    "claude": "auto"
+  },
+  "pendingProviderSessionInvalidations": {},
+  "enableAutoScroll": true,
+  "showMessageTimestamps": false,
+  "deferMathRenderingDuringStreaming": true,
+  "pluginRenderedFenceLanguages": [],
+  "expandFileEditsByDefault": false,
+  "chatViewPlacement": "right-sidebar",
+  "enableZenMode": true,
+  "zenModePosition": null,
+  "enableDualPane": true,
+  "dualPaneSide": "right",
+  "restoreTabsOnStartup": true,
+  "skillsSynced": false,
+  "sessionManagerOrganization": "list",
+  "sessionManagerSort": "last-updated",
+  "sessionAutoArchiveAfter": "off",
+  "pinnedLinkedContentPaths": [],
+  "hiddenCommands": []
+}
