@@ -504,7 +504,7 @@ class App:
         except Exception:
             messagebox.showerror("回填失败", traceback.format_exc(limit=3))
             return
-        messagebox.showinfo("已回填", "时间表 v3 的「九、实际进度」已刷新。")
+        messagebox.showinfo("已回填", "时间表的「八、实际进度」已刷新。")
 
     def on_refresh(self) -> None:
         n = self.week.n if self.week else 1
