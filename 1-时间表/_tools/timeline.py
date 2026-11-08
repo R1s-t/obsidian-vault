@@ -16,7 +16,7 @@
 安全约定：
   - 只改写 <!-- AUTO:PROGRESS:START --> 与 <!-- AUTO:PROGRESS:END --> 之间的内容
   - 已有周任务单永不覆盖
-  - 写盘前备份到 _tools/backup/
+  - 写盘前备份到库外 `ObsidianArchive/_backup/`（不占库，不进 git）
 """
 
 from __future__ import annotations
@@ -34,7 +34,10 @@ TOOLS_DIR = Path(__file__).resolve().parent
 VAULT = TOOLS_DIR.parents[1]                      # .../ObsidianVault
 TS_DIR = VAULT / "1-时间表"                        # 时间表目录（改名只需改这一行）
 WEEK_DIR = TS_DIR / "周"                           # 每周任务单
-BACKUP_DIR = TOOLS_DIR / "backup"
+# 备份放在库外：历史快照不属于知识库，不该被 Obsidian 索引与同步
+# 库在 ~/Documents/ObsidianVault，归档在 ~/ObsidianArchive（同在用户主目录下）
+ARCHIVE_DIR = VAULT.parents[1] / "ObsidianArchive" / "_backup"
+BACKUP_DIR = ARCHIVE_DIR
 
 TIMELINE_GLOB = "*全周期时间表*.md"
 PLAN_NAME = "项目规划.md"
@@ -385,7 +388,7 @@ def render_progress(weeks_info: dict, stats: dict) -> str:
 
     lines = [
         MARK_START,
-        "## 九、实际进度（自动生成，勿手改）",
+        "## 八、实际进度（自动生成，勿手改）",
         "",
         f"> 由 `1-时间表/_tools/timeline.py` 于 {now} 生成。手改会在下次运行被覆盖。",
         "",

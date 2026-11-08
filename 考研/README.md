@@ -13,7 +13,7 @@
 | 里程碑与倒计时.md | 报名、初试、出分、复试等关键日期 |
 | README.md | 本文件 |
 
-项目主线不在这里，在 **`1-时间表/`**：[项目规划](C:\Users\29021\Documents\ObsidianVault\1-时间表\项目规划.md) · [全周期时间表 v3](C:\Users\29021\Documents\ObsidianVault\1-时间表\2026-2028%20全周期时间表%20v3.md) · [前置知识与知识地图](C:\Users\29021\Documents\ObsidianVault\1-时间表\前置知识与知识地图.md)。
+项目主线不在这里，在 **`1-时间表/`**：[项目规划](C:\Users\29021\Documents\ObsidianVault\1-时间表\项目规划.md) · [全周期时间表](C:\Users\29021\Documents\ObsidianVault\1-时间表\2026-2028%20全周期时间表.md) · [前置知识与知识地图](C:\Users\29021\Documents\ObsidianVault\1-时间表\前置知识与知识地图.md)。
 
 ## 二、为什么不再建子目录
 
@@ -23,11 +23,7 @@
 
 ## 三、日常怎么用
 
-1. **看全局** → [全周期时间表 v3](C:\Users\29021\Documents\ObsidianVault\1-时间表\2026-2028%20全周期时间表%20v3.md)，或桌面的「时间表助手」
+1. **看全局** → [全周期时间表](C:\Users\29021\Documents\ObsidianVault\1-时间表\2026-2028%20全周期时间表.md)，或桌面的「时间表助手」
 2. **看考研节点** → [里程碑与倒计时](C:\Users\29021\Documents\ObsidianVault\考研\里程碑与倒计时.md)
 3. **记当天** → 日记，不另建结构
 4. **写计划** → 直接在 [考研规划](C:\Users\29021\Documents\ObsidianVault\考研\考研规划.md) 里改，不再分阶段文件
-
-## 四、历史（仅留档）
-
-本目录原本是一个独立库（`Documents/考研库`），带 `Templates/`、日记、Calendar、Tasks 插件配置。合并进主库后，插件与模板都由主库统一管理，原来的「首次配置」五步已作废。相关记录见 [库说明](C:\Users\29021\Documents\ObsidianVault\0-入口\库说明.md)。
