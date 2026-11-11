@@ -41,18 +41,18 @@ ris-t@CaoKang:~$
 
 ## 十个命令，覆盖九成操作
 
-| 命令 | 作用 | 例子 |
-|------|------|------|
-| `pwd` | 我在哪 | `pwd` |
-| `ls` | 这有什么 | `ls -l` 详细、`ls -a` 含隐藏 |
-| `cd` | 去哪 | `cd dir`、`cd ..` 上一级、`cd ~` 回家、`cd -` 回上次 |
-| `mkdir` | 建目录 | `mkdir -p a/b/c`（`-p` 连父目录一起建） |
-| `cp` | 复制 | `cp a.v b.v`、`cp -r 目录1 目录2` |
-| `mv` | 移动/改名 | `mv old.v new.v`（改名也是它，没有单独的 rename） |
-| `rm` | 删除 | `rm a.v`、`rm -r 目录`（不可恢复） |
-| `cat` | 看文件 | `cat full_adder.v` |
-| `less` | 分页看 | `less 长文件`，`q` 退出 |
-| `grep` | 搜内容 | `grep "assign" *.v` |
+| 命令      | 作用    | 例子                                        |
+| ------- | ----- | ----------------------------------------- |
+| `pwd`   | 我在哪   | `pwd`                                     |
+| `ls`    | 这有什么  | `ls -l` 详细、`ls -a` 含隐藏                    |
+| `cd`    | 去哪    | `cd dir`、`cd ..` 上一级、`cd ~` 回家、`cd -` 回上次 |
+| `mkdir` | 建目录   | `mkdir -p a/b/c`（`-p` 连父目录一起建）            |
+| `cp`    | 复制    | `cp a.v b.v`、`cp -r 目录1 目录2`              |
+| `mv`    | 移动/改名 | `mv old.v new.v`（改名也是它，没有单独的 rename）      |
+| `rm`    | 删除    | `rm a.v`、`rm -r 目录`（不可恢复）                 |
+| `cat`   | 看文件   | `cat full_adder.v`                        |
+| `less`  | 分页看   | `less 长文件`，`q` 退出                         |
+| `grep`  | 搜内容   | `grep "assign" *.v`                       |
 
 补充三个：
 
