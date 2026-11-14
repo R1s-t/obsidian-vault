@@ -3,5 +3,6 @@
   "baseFontSize": 16,
   "accentColor": "",
   "showViewHeader": true,
-  "enabledCssSnippets": []
+  "enabledCssSnippets": [],
+  "showRibbon": true
 }
