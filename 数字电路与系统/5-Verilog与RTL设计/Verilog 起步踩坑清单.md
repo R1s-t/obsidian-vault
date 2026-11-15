@@ -19,7 +19,7 @@ created: 2026-11-12
 - 系统：WSL2 Ubuntu 24.04，工作目录 `~/projects/digital-lab/01-adder4/`
 - 加载命令：无需加载，命令行直接调
 
-## 六个坑
+## 九个坑
 
 ### 1. 文件名里的连字符和下划线
 
@@ -94,6 +94,48 @@ assign cout = (a&b) | ((a|b) & cin);    // ✓
 
 宁可多写括号——综合出来是同一个电路，少写就是给自己埋雷。
 
+### 7. `vvp` 是命令，`.vvp` 是文件名
+
+```
+$ vpp tb.vvp
+vpp: command not found
+```
+
+| | 是什么 | 谁规定的 |
+|---|---|---|
+| `vvp` | **可执行程序**，在 `/usr/bin/vvp` | 装 iverilog 时装好的 |
+| `.vvp` | **文件后缀**，纯惯例 | 你自己起的，叫 `tb.abc` 也能跑 |
+
+`iverilog -o 输出文件名 源文件...` 里的输出名随便起；但 `vvp` 那个命令名一个字母都不能错。
+
+`which vvp` 可以确认它在 `/usr/bin/vvp`。
+
+### 8. `c3` 和 `c[3]` 不是一个东西
+
+```verilog
+wire c1, c2, c3;
+
+.cout(c3)    // ✓ 一根叫 c3 的线
+.cout(c[3])  // ✗ c 根本没声明，方括号是"取向量 c 的第 3 位"
+```
+
+- `c3`：标识符的一部分，字母 c 后面跟数字 3，**整体是名字**
+- `c[3]`：**位选**，从名为 `c` 的向量里取第 3 位
+
+`c` 不存在时又触发隐式 wire（见坑 5），编译器只给 warning，然后连接默默断掉。
+
+### 9. 命名端口连接必须一字不差
+
+```verilog
+full_adder u3 (.a(a[3]), .b(b[3]), .c(c3), ...);   // ✗ 端口叫 cin，不叫 c
+```
+
+```
+adder4.v:26: error: port 'c' is not a port of full_adder
+```
+
+点号后是**被例化模块内部**的端口名，必须和那个模块的 `module` 头完全一致。拼错就报 `is not a port`——这个错至少会报出来，比坑 5 和坑 8 好查。
+
 ## 一条更根本的认知
 
 **编译通过 ≠ 电路正确。**
@@ -103,8 +145,9 @@ assign cout = (a&b) | ((a|b) & cin);    // ✓
 ## 验证清单
 
 - [x] `iverilog -o /tmp/t.vvp full_adder.v` 返回 0
-- [ ] testbench 8 组穷举全对
-- [ ] `adder4.v` 源码里 grep 不到 `+`
+- [x] testbench 8 组穷举全对（2026-11-13）
+- [x] `adder4.v` 四个全加器串联，源码无 `+`
+- [ ] testbench 512 组穷举全过
 - [ ] Icarus 与 Verilator 双仿真都过
 
 ## 有用命令
