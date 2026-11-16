@@ -147,8 +147,9 @@ adder4.v:26: error: port 'c' is not a port of full_adder
 - [x] `iverilog -o /tmp/t.vvp full_adder.v` 返回 0
 - [x] testbench 8 组穷举全对（2026-11-13）
 - [x] `adder4.v` 四个全加器串联，源码无 `+`
-- [ ] testbench 512 组穷举全过
-- [ ] Icarus 与 Verilator 双仿真都过
+- [x] testbench 512 组穷举全过（`vvp tb.vvp | wc -l` 返回 513，2026-11-16）
+- [x] Icarus 与 Verilator 双仿真都过（两工具输出 `diff` 逐字节一致）
+- [x] 波形能在 GTKWave 里看到 `cin → c1 → c2 → c3 → cout`
 
 ## 有用命令
 
