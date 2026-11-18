@@ -88,13 +88,22 @@ def write_text(p: Path, s: str) -> None:
     p.write_text(s, encoding="utf-8", newline="\n")
 
 
-def backup(p: Path) -> None:
+def backup(p: Path, keep: int = 20) -> None:
     if not p.exists():
         return
     BACKUP_DIR.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")[:-3]   # 带毫秒，同一秒内多次写也不互相覆盖
     dst = BACKUP_DIR / f"{p.stem}.{stamp}{p.suffix}"
     shutil.copy2(p, dst)
+    # 自动同步会频繁写，旧备份只留最近 keep 份，不然一天就能堆出上千个文件
+    olds = [f for f in BACKUP_DIR.iterdir()
+            if f.is_file() and f.suffix == p.suffix and f.name.startswith(p.stem + ".")]
+    olds.sort(key=lambda f: f.stat().st_mtime)
+    for f in olds[:-keep]:
+        try:
+            f.unlink()
+        except OSError:
+            pass
 
 
 def frontmatter(text: str) -> dict:
@@ -256,40 +265,73 @@ def split_tasks_with_hours(task_text: str, total_hours) -> list:
     return [(t, float(h or 0)) for t, h in items]
 
 
+def _load_week_tasks(n: int):
+    """手写任务清单（week_tasks.py）。没有就返回 None，回退到自动切分。"""
+    try:
+        import week_tasks  # 同目录
+        return week_tasks.WEEKS.get(n)
+    except Exception:
+        return None
+
+
 def render_week(n: int, info: dict, existing_names: list) -> str:
     s, e = week_range(n)
     stage = info["stage"]
     hours = week_hours(n, stage)
-    pairs = split_tasks_with_hours(info["task"], hours)
     ms = info["milestone"] if info["milestone"] not in ("", "—", "-") else "—"
+
+    hand = _load_week_tasks(n)
+    if hand:
+        goal = hand["goal"]
+        pairs = [tuple(x) for x in hand["tasks"]]
+        # 手写清单的工时就是计划工时（期末周、春节周可能低于阶段默认值）
+        hours = round(sum(float(h) for _, h in pairs), 1)
+    else:
+        goal = info["task"]
+        pairs = split_tasks_with_hours(info["task"], hours)
+    hstr = f"{hours:g}"
 
     lines = [
         "---",
         f"week: {n}",
         f"range: {s} ~ {e}",
         f"stage: {stage}",
-        f"hours_planned: {hours}",
+        f"hours_planned: {hstr}",
         "---",
         "",
         f"# W{n:02d} 任务单（{s:%Y-%m-%d} ~ {e:%m-%d}）",
         "",
         "> [!info] 本周主线",
-        f"> {info['task']}",
-        f"> 阶段 **{STAGE_NAME.get(stage, stage)}** · 计划 **{hours}h**"
+        f"> {goal}",
+        f"> 阶段 **{STAGE_NAME.get(stage, stage)}** · 计划 **{hstr}h**"
         + (f" · 硬节点：{ms}" if ms and ms not in ("—", "-") else ""),
         "",
-        "## 任务",
-        "",
     ]
+
+    if hand and hand.get("carry"):
+        lines += [
+            "> [!note] 上周结转",
+            f"> {hand['carry']}",
+            "",
+        ]
+
+    lines += ["## 任务", ""]
     for i, (t, h) in enumerate(pairs, 1):
         lines.append(f"- [ ] W{n:02d}-{i:02d} {t} · {h:g}h")
+
+    if hand:
+        if hand.get("done"):
+            lines += ["", "## 完成标准", "", hand["done"]]
+        if hand.get("next"):
+            lines += ["", "## 下周会用到这周的", "", hand["next"]]
+
     lines += [
         "",
         "## 记录",
         "",
         "| 项 | 计划 | 实际 |",
         "| --- | --- | --- |",
-        f"| 工时 | {hours}h | |",
+        f"| 工时 | {hstr}h | |",
         "| 卡点 | — | |",
         "",
     ]
@@ -302,7 +344,9 @@ def cmd_week(args) -> int:
     today = date.today()
 
     # 决定要「确保存在」哪几周
-    if args.week:
+    if getattr(args, "all", False):
+        targets = list(range(1, TOTAL_WEEKS + 1))
+    elif args.week:
         targets = [args.week]
     else:
         cur = current_week()
@@ -321,27 +365,51 @@ def cmd_week(args) -> int:
             return 0
 
     for target in targets:
-        _ensure_week(weeks, target, args.dry)
+        _ensure_week(weeks, target, args.dry, getattr(args, "force", False))
     return 0
 
 
-def _ensure_week(weeks: dict, n: int, dry: bool) -> None:
+def _task_body(line: str) -> str:
+    """从任务行里取出「正文」，用来比对新旧版本是不是同一条任务。"""
+    body = re.sub(r"^- \[[ xX]\]\s*W\d+-\d+\s*", "", line)
+    return body.split(" · ")[0].strip()
+
+
+def _ensure_week(weeks: dict, n: int, dry: bool, force: bool = False) -> None:
     if n not in weeks:
         print(f"[跳过] 逐周表里没有 W{n}")
         return
     p = week_path(n)
-    if p.exists():
-        print(f"[已存在] {p.name}（不覆盖）")
-        return
+
+    old_done = {}
+    existed = p.exists()
+    if existed:
+        if not force:
+            print(f"[已存在] {p.name}（不覆盖；要重写加 --force）")
+            return
+        for line in read_text(p).splitlines():
+            if TASK_LINE.match(line):
+                old_done[_task_body(line)] = line.lstrip()[3] in "xX"
+        backup(p)
 
     content = render_week(n, weeks[n], [])
+
+    # 重写时把同名任务的勾选状态继承过来，避免用户白勾一场
+    if old_done:
+        out = []
+        for line in content.splitlines():
+            if TASK_LINE.match(line) and old_done.get(_task_body(line)):
+                line = line.replace("- [ ]", "- [x]", 1)
+            out.append(line)
+        content = "\n".join(out)
+
     if dry:
         print(f"--- 将写入 {p.name} ---")
         print(content)
         return
 
     write_text(p, content)
-    print(f"[生成] {p.name}")
+    print(("[重写] " if existed else "[生成] ") + p.name)
 
 
 # ---------------------------------------------------------------- 统计与回填
@@ -464,6 +532,8 @@ def main(argv=None) -> int:
     ap.add_argument("cmd", nargs="?", default="all", choices=["all", "week", "progress"])
     ap.add_argument("--week", type=int, help="指定周号（1–31），默认按今天算")
     ap.add_argument("--dry", action="store_true", help="只打印，不写盘")
+    ap.add_argument("--all", action="store_true", help="处理全部 W1–W31")
+    ap.add_argument("--force", action="store_true", help="重写已存在的周单（继承已勾选的项）")
     args = ap.parse_args(argv)
 
     if not TS_DIR.exists():

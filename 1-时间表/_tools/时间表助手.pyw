@@ -34,14 +34,30 @@ import timeline as TL  # noqa: E402
 
 FONT = ("Microsoft YaHei UI", 10)
 FONT_B = ("Microsoft YaHei UI", 10, "bold")
-FONT_T = ("Microsoft YaHei UI", 16, "bold")
+FONT_T = ("Microsoft YaHei UI", 18)          # 大标题：大 + 细字重，不用 bold
+FONT_H = ("Microsoft YaHei UI", 15)          # 右侧周标题
+FONT_NUM = ("Microsoft YaHei UI", 17, "bold")  # 统计数字
 FONT_S = ("Microsoft YaHei UI", 9)
+FONT_XS = ("Microsoft YaHei UI", 9)
 
 TASK_LINE_RE = re.compile(r"^(\s*)- \[( |x|X)\] (.+)$")
 BOXED = re.compile(r"^(\s*)- \[( |x|X)\] (.*)$")
 
-BG = "#faf9f7"
-BG2 = "#ffffff"
+# ---- 配色：苹果极简白的中性色阶 + 一个深绿主色（只用于进度与主按钮）
+BG = "#f5f5f7"          # 窗口底（canvas-alt）
+BG2 = "#ffffff"         # 卡片底
+LINE = "#d2d2d7"        # hairline
+INK = "#1d1d1f"         # 主文字（近黑）
+INK2 = "#6e6e73"        # 次要文字
+INK3 = "#86868b"        # 更弱
+ACCENT = "#2f6b4f"      # 主色（深绿）
+ACCENT_D = "#23543d"    # 主色按下
+ACCENT_BG = "#e8f5ee"   # 主色浅底（bento 浅绿）
+WARN_BG = "#fdf0ef"     # 硬节点底（bento 浅橙）
+WARN_FG = "#a04a2a"     # 硬节点字
+CUR_BG = "#fff7e6"      # 当前周高亮（bento 浅黄）
+TILE_BLUE = "#eef2ff"   # 阶段统计卡底（bento 浅蓝）
+HOVER = "#fafafa"       # 白底上的 hover
 
 EXAM_DATE = date(2027, 12, 25)      # 初试第一天
 STOP_DATE = date(2027, 9, 6)        # 硬切换日：停项目转初试
@@ -76,9 +92,9 @@ class WeekFile:
         self.stage = fm.get("stage", "")
         self.date_range = fm.get("range", "")
         try:
-            self.hours = int(fm.get("hours_planned", "0") or 0)
+            self.hours = float(fm.get("hours_planned", "0") or 0)
         except ValueError:
-            self.hours = 0
+            self.hours = 0.0
         for i, line in enumerate(self.lines):
             m = TASK_LINE_RE.match(line)
             if not m:
@@ -164,140 +180,274 @@ class App:
     def _buildup_ui(self) -> None:
         r = self.root
         r.title("时间表助手 · 2026-2028")
-        r.geometry("1020x700")
+        r.geometry("1100x650")
         r.minsize(860, 560)
         r.configure(bg=BG)
 
         style = ttk.Style()
-        try:
-            style.theme_use("vista")
-        except tk.TclError:
-            pass
-        style.configure("Treeview", font=FONT, rowheight=26)
-        style.configure("Treeview.Heading", font=FONT_B)
-        style.configure("TButton", font=FONT)
-        style.configure("Big.TButton", font=FONT_B)
-        style.configure("TPanedwindow", background=BG)
+        style.theme_use("clam")          # vista 主题改不动 Treeview 底色，clam 可以
+        style.configure("Treeview", font=FONT, rowheight=31,
+                        background=BG2, fieldbackground=BG2,
+                        borderwidth=0, relief="flat")
+        style.map("Treeview",
+                  background=[("selected", ACCENT_BG)],
+                  foreground=[("selected", INK)])
+        style.configure("Treeview.Heading", font=FONT_S, background=BG2,
+                        foreground=INK3, relief="flat", borderwidth=0, padding=(8, 8))
+        style.map("Treeview.Heading", background=[("active", BG2)])
+        style.layout("Treeview", [("Treeview.treearea", {"sticky": "nswe"})])
+        style.configure("Green.Horizontal.TProgressbar", troughcolor="#ececf0",
+                        background=ACCENT, thickness=8, borderwidth=0,
+                        lightcolor=ACCENT, darkcolor=ACCENT)
+        style.configure("TScrollbar", troughcolor=BG2, background=LINE,
+                        borderwidth=0, arrowsize=12, relief="flat")
+        style.map("TScrollbar", background=[("active", "#c7c7cc")])
 
-        # ---- 顶栏
+        # ---- 顶栏（第一行只放标题和按钮，副标题单独一行——不然窄屏下按钮会被挤没）
         top = tk.Frame(r, bg=BG)
-        top.pack(fill="x", padx=14, pady=(12, 6))
-        tk.Label(top, text="时间表助手", font=FONT_T, bg=BG, fg="#222").pack(side="left")
-        self.sub = tk.Label(top, text="", font=FONT_S, bg=BG, fg="#777")
-        self.sub.pack(side="left", padx=12, pady=(6, 0))
-        tk.Button(top, text="刷新", font=FONT, relief="flat", bg="#eceae6",
-                  activebackground="#e0ded9", padx=12, cursor="hand2",
-                  command=self.on_refresh).pack(side="right")
-        tk.Button(top, text="回填", font=FONT, relief="flat", bg="#eceae6",
-                  activebackground="#e0ded9", padx=12, cursor="hand2",
-                  command=self.on_snapshot).pack(side="right", padx=6)
-        tk.Button(top, text="周文件夹", font=FONT, relief="flat", bg="#eceae6",
-                  activebackground="#e0ded9", padx=12, cursor="hand2",
-                  command=self.open_folder).pack(side="right")
-        tk.Button(top, text="本周文件", font=FONT, relief="flat", bg="#eceae6",
-                  activebackground="#e0ded9", padx=12, cursor="hand2",
-                  command=self.open_week_file).pack(side="right", padx=6)
-        tk.Button(top, text="生成下一周", font=FONT, relief="flat", bg="#dcebdc",
-                  activebackground="#cbe0cb", padx=12, cursor="hand2",
-                  command=self.on_next_week).pack(side="right", padx=(0, 6))
+        top.pack(fill="x", padx=20, pady=(16, 0))
+
+        line1 = tk.Frame(top, bg=BG)
+        line1.pack(fill="x")
+
+        # 按钮先占位（pack 先来先得），标题再吃剩下的
+        bar = tk.Frame(line1, bg=BG)
+        bar.pack(side="right")
+        self.btn_sync = self._mkbtn(bar, "同步", self.on_sync, primary=True)
+        self.btn_sync.pack(side="right")
+        self.btn_dir = self._mkbtn(bar, "周文件夹", self.open_folder)
+        self.btn_dir.pack(side="right", padx=(0, 6))
+        self.btn_this = self._mkbtn(bar, "本周文件", self.open_week_file)
+        self.btn_this.pack(side="right", padx=(0, 6))
+        self.status = tk.Label(bar, text="", font=FONT_XS, bg=BG, fg=ACCENT)
+        self.status.pack(side="right", padx=(0, 12))
+
+        tk.Label(line1, text="时间表助手", font=FONT_T, bg=BG, fg=INK).pack(side="left")
+
+        self.sub = tk.Label(top, text="", font=FONT_XS, bg=BG, fg=INK3, anchor="w")
+        self.sub.pack(fill="x", pady=(6, 0))
+
+        # 顶栏下的分隔线
+        tk.Frame(r, bg=LINE, height=1).pack(fill="x", padx=20, pady=(14, 0))
 
         # ---- 主体：左列表 + 右详情
         body = tk.Frame(r, bg=BG)
-        body.pack(fill="both", expand=True, padx=14, pady=(0, 10))
+        body.pack(fill="both", expand=True, padx=20, pady=(14, 16))
 
-        left = tk.Frame(body, bg=BG, width=300)
+        left = tk.Frame(body, bg=BG, width=316)
         left.pack(side="left", fill="y")
         left.pack_propagate(False)
 
-        tk.Label(left, text="全部 31 周", font=FONT_B, bg=BG, fg="#555",
-                 anchor="w").pack(fill="x", pady=(0, 6))
+        lhead = tk.Frame(left, bg=BG)
+        lhead.pack(fill="x", pady=(0, 8))
+        tk.Label(lhead, text="全部 31 周", font=FONT_B, bg=BG, fg=INK2,
+                 anchor="w").pack(side="left")
+        self.l_sum = tk.Label(lhead, text="", font=FONT_XS, bg=BG, fg=INK3, anchor="e")
+        self.l_sum.pack(side="right")
+
+        # 左栏底部：本阶段节奏（时间过了多少 vs 任务做了多少）+ 下一个硬节点
+        pacebox = tk.Frame(left, bg=BG)
+        pacebox.pack(side="bottom", fill="x", pady=(10, 0))
+        self.pace: dict[str, tuple[tk.Frame, tk.Label]] = {}
+        for key, label, color in (("time", "时间", INK3), ("task", "任务", ACCENT)):
+            row = tk.Frame(pacebox, bg=BG)
+            row.pack(fill="x", pady=(0, 5))
+            tk.Label(row, text=label, font=FONT_XS, bg=BG, fg=INK3, width=4,
+                     anchor="w").pack(side="left")
+            pct = tk.Label(row, text="—", font=FONT_XS, bg=BG, fg=INK2, width=5, anchor="e")
+            pct.pack(side="right")
+            track = tk.Frame(row, bg="#ececf0", height=5)
+            track.pack(side="left", fill="x", expand=True, padx=(6, 8))
+            track.pack_propagate(False)
+            fill = tk.Frame(track, bg=color, height=5)
+            fill.place(x=0, y=0, relheight=1, relwidth=0)
+            self.pace[key] = (fill, pct)
+        self.h_next = tk.Label(pacebox, text="", font=FONT_XS, bg=BG, fg=INK2,
+                               anchor="w", justify="left", wraplength=292)
+        self.h_next.pack(fill="x", pady=(3, 0))
+
+        lcard = tk.Frame(left, bg=BG2)
+        lcard.pack(fill="both", expand=True)
 
         cols = ("w", "d", "p")
-        self.tree = ttk.Treeview(left, columns=cols, show="headings", height=20)
+        lwrap = tk.Frame(lcard, bg=BG2)
+        lwrap.pack(fill="both", expand=True)
+        self.tree = ttk.Treeview(lwrap, columns=cols, show="headings", height=18)
+        self.tsb = ttk.Scrollbar(lwrap, orient="vertical", command=self.tree.yview)
+        self.tree.configure(yscrollcommand=self.tsb.set)
         self.tree.heading("w", text="周")
         self.tree.heading("d", text="日期")
         self.tree.heading("p", text="完成")
-        self.tree.column("w", width=52, anchor="w")
-        self.tree.column("d", width=118, anchor="w")
-        self.tree.column("p", width=72, anchor="center")
-        self.tree.pack(fill="both", expand=True)
-        self.tree.tag_configure("cur", background="#fff4d6")
-        self.tree.tag_configure("none", foreground="#b0b0b0")
+        self.tree.column("w", width=56, anchor="w")
+        self.tree.column("d", width=130, anchor="w")
+        self.tree.column("p", width=84, anchor="center")
+        self.tree.pack(side="left", fill="both", expand=True)
+        self.tsb.pack(side="right", fill="y")
+        self.tree.tag_configure("cur", background=CUR_BG, foreground=INK)
+        self.tree.tag_configure("none", foreground=INK3)
+        self.tree.tag_configure("done", foreground=ACCENT)
+        # 左侧列表的滚轮：31 行在小窗口装不下，得能滚
+        self.tree.bind("<MouseWheel>", self._on_tree_wheel)
+        self.tree.bind("<Button-4>", lambda e: self.tree.yview_scroll(-3, "units"))
+        self.tree.bind("<Button-5>", lambda e: self.tree.yview_scroll(3, "units"))
         # 防重入：select_week 内部会 selection_set，若不加闸会与 on_pick 互相触发
         self._suppress_pick = False
         self.tree.bind("<<TreeviewSelect>>", self.on_pick)
 
-        self.l_sum = tk.Label(left, text="", font=FONT_S, bg=BG, fg="#888", anchor="w")
-        self.l_sum.pack(fill="x", pady=(6, 0))
-
         # ---- 右侧
-        right = tk.Frame(body, bg=BG2, highlightthickness=1,
-                         highlightbackground="#e4e1db")
-        right.pack(side="left", fill="both", expand=True, padx=(12, 0))
+        right = tk.Frame(body, bg=BG2)
+        right.pack(side="left", fill="both", expand=True, padx=(14, 0))
 
         head = tk.Frame(right, bg=BG2)
-        head.pack(fill="x", padx=18, pady=(14, 4))
-        self.h_title = tk.Label(head, text="", font=("Microsoft YaHei UI", 15, "bold"),
-                                bg=BG2, fg="#1a1a1a", anchor="w")
-        self.h_title.pack(fill="x")
-        self.h_meta = tk.Label(head, text="", font=FONT_S, bg=BG2, fg="#777", anchor="w")
-        self.h_meta.pack(fill="x", pady=(2, 0))
-        self.h_badge = tk.Label(head, text="", font=FONT_S, bg="#fdf1e0", fg="#a06000",
-                                anchor="w", padx=8, pady=2)
-        self.h_main = tk.Label(head, text="", font=FONT, bg=BG2, fg="#444",
-                               anchor="w", justify="left", wraplength=600)
-        self.h_main.pack(fill="x", pady=(6, 0))
+        head.pack(fill="x", padx=24, pady=(20, 0))
+
+        titlerow = tk.Frame(head, bg=BG2)
+        titlerow.pack(fill="x")
+        # 标题左侧的竖线，充当视觉锚点
+        tk.Frame(titlerow, bg=ACCENT, width=3, height=20).pack(side="left", padx=(0, 10))
+        self.h_title = tk.Label(titlerow, text="", font=FONT_H,
+                                bg=BG2, fg=INK, anchor="w")
+        self.h_title.pack(side="left")
+
+        self.h_meta = tk.Label(head, text="", font=FONT_XS, bg=BG2, fg=INK3, anchor="w")
+        self.h_meta.pack(fill="x", pady=(7, 0))
+
+        # 三个指标卡（本周 / 阶段 / 全部）：数字大、标签小，一眼看出差多少
+        self.cards: dict[str, tuple[tk.Label, tk.Label]] = {}
+        cardrow = tk.Frame(head, bg=BG2)
+        cardrow.pack(fill="x", pady=(12, 0))
+        specs = (("week", "本周", ACCENT_BG),
+                 ("phase", "本阶段", TILE_BLUE),
+                 ("all", "全部", BG))
+        for i, (key, label, tint) in enumerate(specs):
+            card = tk.Frame(cardrow, bg=tint)
+            card.pack(side="left", fill="x", expand=True,
+                      padx=(0, 8) if i < len(specs) - 1 else 0)
+            num = tk.Label(card, text="—", font=FONT_NUM, bg=tint, fg=INK, anchor="w")
+            num.pack(fill="x", padx=14, pady=(9, 0))
+            tag = tk.Label(card, text=label, font=FONT_XS, bg=tint, fg=INK3, anchor="w")
+            tag.pack(fill="x", padx=14, pady=(1, 9))
+            self.cards[key] = (num, tag)
+
+        self.h_badge = tk.Label(head, text="", font=FONT_XS, bg=WARN_BG, fg=WARN_FG,
+                                anchor="w", padx=10, pady=3)
+        self.h_main = tk.Label(head, text="", font=FONT, bg=BG2, fg=INK2,
+                               anchor="w", justify="left", wraplength=620)
+        self.h_main.pack(fill="x", pady=(8, 0))
+
+        tk.Frame(right, bg=LINE, height=1).pack(fill="x", padx=24, pady=(16, 0))
 
         # 可滚动任务区
         wrap = tk.Frame(right, bg=BG2)
-        wrap.pack(fill="both", expand=True, padx=18, pady=(10, 4))
+        wrap.pack(fill="both", expand=True, padx=24, pady=(6, 4))
         self.canvas = tk.Canvas(wrap, bg=BG2, highlightthickness=0)
-        sb = ttk.Scrollbar(wrap, orient="vertical", command=self.canvas.yview)
-        self.canvas.configure(yscrollcommand=sb.set)
-        sb.pack(side="right", fill="y")
+        self.sb = ttk.Scrollbar(wrap, orient="vertical", command=self.canvas.yview)
+        self.canvas.configure(yscrollcommand=self.sb.set)
         self.canvas.pack(side="left", fill="both", expand=True)
         self.inner = tk.Frame(self.canvas, bg=BG2)
         self._win = self.canvas.create_window((0, 0), window=self.inner, anchor="nw")
-        self.inner.bind("<Configure>",
-                        lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
-        self.canvas.bind("<Configure>",
-                         lambda e: self.canvas.itemconfigure(self._win, width=e.width))
+        self.inner.bind("<Configure>", lambda e: self._sync_scroll())
+        self.canvas.bind("<Configure>", self._on_canvas_resize)
         for seq in ("<MouseWheel>", "<Button-4>", "<Button-5>"):
             self.canvas.bind_all(seq, self._on_wheel, add="+")
+        self._scroll_need = False
 
-        # 底部进度
+        # 底部进度（累计数字在上面的指标卡里，这里只留本周一行）
+        # 注意先把它插到 wrap 前面占位，否则 expand 的任务区会把它挤出窗口
         foot = tk.Frame(right, bg=BG2)
-        foot.pack(fill="x", padx=18, pady=(4, 14))
-        self.bar = ttk.Progressbar(foot, mode="determinate", maximum=100)
+        foot.pack(side="bottom", fill="x", padx=24, pady=(6, 14), before=wrap)
+        self.bar = ttk.Progressbar(foot, mode="determinate", maximum=100,
+                                   style="Green.Horizontal.TProgressbar")
         self.bar.pack(fill="x")
         row = tk.Frame(foot, bg=BG2)
-        row.pack(fill="x", pady=(6, 0))
-        self.p_week = tk.Label(row, text="", font=FONT_B, bg=BG2, fg="#1f6f3f", anchor="w")
+        row.pack(fill="x", pady=(8, 0))
+        self.p_week = tk.Label(row, text="", font=FONT_XS, bg=BG2, fg=INK2, anchor="w")
         self.p_week.pack(side="left")
-        self.p_all = tk.Label(row, text="", font=FONT_S, bg=BG2, fg="#777", anchor="e")
-        self.p_all.pack(side="right")
-        self.btn_new = tk.Button(foot, text="为这一周生成任务单", font=FONT_B,
-                                 relief="flat", bg="#1f6f3f", fg="white",
-                                 activebackground="#175432", activeforeground="white",
-                                 padx=18, pady=6, cursor="hand2",
-                                 command=self.on_create)
-        self.btn_new.pack(pady=(10, 0))
+        self.btn_new = self._mkbtn(foot, "为这一周生成任务单", self.on_create, primary=True)
+        self.btn_new.pack(pady=(12, 0))
 
-        r.bind("<Control-r>", lambda e: self.on_refresh())
-        r.bind("<Escape>", lambda e: r.destroy())
+        r.bind("<Control-r>", lambda e: self.on_sync())
+        r.bind("<Escape>", lambda e: self._on_quit())
+        r.protocol("WM_DELETE_WINDOW", self._on_quit)
         r.bind("<Left>", lambda e: self.step(-1))
         r.bind("<Right>", lambda e: self.step(1))
 
+    def _mkbtn(self, parent, text, cmd, primary=False):
+        """统一样式的扁平按钮：primary 深绿实底，其余白底描边，都带 hover。"""
+        b = tk.Button(parent, text=text,
+                      font=FONT_B if primary else FONT,
+                      relief="flat", bd=0, cursor="hand2",
+                      padx=16, pady=6 if primary else 5,
+                      bg=ACCENT if primary else BG2,
+                      fg="white" if primary else INK2,
+                      activebackground=ACCENT_D if primary else HOVER,
+                      activeforeground="white" if primary else INK,
+                      highlightthickness=0 if primary else 1,
+                      highlightbackground=LINE, highlightcolor=LINE,
+                      command=cmd)
+        if not primary:
+            b.bind("<Enter>", lambda e: b.config(bg=HOVER))
+            b.bind("<Leave>", lambda e: b.config(bg=BG2))
+        return b
+
+    def _flash(self, msg: str, ms: int = 2600) -> None:
+        """在顶栏右侧短暂显示一句提示，替代弹窗。"""
+        self.status.config(text=msg)
+        if getattr(self, "_flash_job", None):
+            try:
+                self.root.after_cancel(self._flash_job)
+            except Exception:
+                pass
+        self._flash_job = self.root.after(ms, lambda: self.status.config(text=""))
+
     # ---------------- 滚动
-    def _on_wheel(self, e):
-        if not self.canvas.winfo_containing(e.x_root, e.y_root):
+    def _on_canvas_resize(self, e) -> None:
+        self.canvas.itemconfigure(self._win, width=e.width)
+        self._sync_scroll()
+
+    def _sync_scroll(self) -> None:
+        """内容比可视区高才显示滚动条；否则隐藏并把视图钉回顶部。"""
+        if not self.canvas.winfo_exists():
             return
-        if getattr(e, "num", None) == 4:
-            self.canvas.yview_scroll(-3, "units")
-        elif getattr(e, "num", None) == 5:
-            self.canvas.yview_scroll(3, "units")
+        need = self.inner.winfo_reqheight()
+        have = self.canvas.winfo_height()
+        taller = need > have
+        if taller != self._scroll_need:
+            self._scroll_need = taller
+            if taller:
+                self.sb.pack(side="right", fill="y")
+            else:
+                self.sb.pack_forget()
+                self.canvas.yview_moveto(0)
+        self.canvas.configure(
+            scrollregion=(0, 0, self.canvas.winfo_width(), need if taller else have))
+        # 任务文字的换行宽度跟着窗口走（留出勾选框与滚动条的余量）
+        wrap = max(260, self.canvas.winfo_width() - (116 if taller else 96))
+        for child in self.inner.winfo_children():
+            if isinstance(child, tk.Checkbutton) and int(child.cget("wraplength")) != wrap:
+                child.configure(wraplength=wrap)
+        # 上周主线那段说明也跟着走
+        hm = max(320, self.canvas.winfo_width() - 8)
+        if int(self.h_main.cget("wraplength")) != hm:
+            self.h_main.configure(wraplength=hm)
+
+    def _on_tree_wheel(self, e) -> None:
+        step = -3 if e.delta > 0 else 3
+        self.tree.yview_scroll(step, "units")
+
+    def _on_wheel(self, e) -> None:
+        if not self._scroll_need:
+            return
+        x, y = self.canvas.winfo_pointerxy()
+        cx, cy = self.canvas.winfo_rootx(), self.canvas.winfo_rooty()
+        if not (cx <= x < cx + self.canvas.winfo_width()
+                and cy <= y < cy + self.canvas.winfo_height()):
+            return
+        if getattr(e, "num", None) in (4, 5):
+            step = -3 if e.num == 4 else 3
         else:
-            self.canvas.yview_scroll(int(-1 * (e.delta / 120)) * 3, "units")
+            step = -3 if e.delta > 0 else 3
+        self.canvas.yview_scroll(step, "units")
 
     # ---------------- 左侧列表
     def refresh_weeks(self) -> None:
@@ -323,7 +473,8 @@ class App:
             self.tree.insert("", "end", iid=str(n),
                              values=(f"W{n:02d}", rng, pct), tags=tags)
         if self.current_n:
-            self.tree.see(str(self.current_n))
+            # 列表还没布局完时 see() 会算错，等一拍再定位
+            self.root.after_idle(lambda n=self.current_n: self.tree.see(str(n)))
         tc = date.today()
         d_stop = (STOP_DATE - tc).days
         d_exam = (EXAM_DATE - tc).days
@@ -357,6 +508,7 @@ class App:
             self._suppress_pick = True
             self.tree.selection_set(str(n))
             self.tree.focus(str(n))
+            self.tree.see(str(n))
             self.root.after_idle(self._release_pick)
         self.render()
 
@@ -388,7 +540,7 @@ class App:
         else:
             day_txt = "已过去"
         cnt = f"{len(w.tasks)} 项" if w.exists else "周单未建"
-        self.h_meta.config(text=f"{stage}　·　计划 {plan}h　·　{cnt}　·　{day_txt}")
+        self.h_meta.config(text=f"{stage}　·　计划 {plan:g}h　·　{cnt}　·　{day_txt}")
 
         ms = info.get("milestone", "")
         if ms and ms not in ("", "—", "-"):
@@ -402,31 +554,39 @@ class App:
             self.h_main.config(text="这一周的任务单还没生成。")
             self.btn_new.pack(pady=(10, 0))
             tk.Label(self.inner, text="点下面的按钮生成这一周的任务单。",
-                     font=FONT, bg=BG2, fg="#888").pack(anchor="w", pady=20)
+                     font=FONT, bg=BG2, fg=INK3).pack(anchor="w", pady=20)
             self.bar.config(value=0)
             self.p_week.config(text="—")
-            self.p_all.config(text="")
+            self._update_cards()
+            self.root.after_idle(self._sync_scroll)
             return
 
         self.btn_new.pack_forget()
         main = self.weeks.get(w.n, {}).get("task", "")
-        self.h_main.config(text=main)
+        # 逐周表里的 Markdown 粗体标记在 Label 里不解析，露出来很丑，去掉
+        self.h_main.config(text=main.replace("**", ""))
 
         # 任务清单：一列到底，不分组
+        wl = max(280, self.canvas.winfo_width() - 96)
         for idx, t in enumerate(w.tasks):
             var = tk.BooleanVar(value=t["done"])
             cb = tk.Checkbutton(
-                self.inner, text=t["text"], variable=var, font=FONT,
-                bg=BG2, activebackground=BG2, anchor="w", justify="left",
-                wraplength=560, padx=6, pady=4, cursor="hand2",
-                fg="#999" if t["done"] else "#222",
+                self.inner, text=t["text"].replace("**", ""), variable=var,
+                font=FONT if not t["done"] else (FONT[0], FONT[1], "overstrike"),
+                bg=BG2, activebackground=ACCENT_BG, selectcolor=BG2,
+                anchor="w", justify="left", wraplength=wl,
+                padx=2, pady=6, bd=0, highlightthickness=0, cursor="hand2",
+                fg=INK3 if t["done"] else INK,
+                activeforeground=INK,
                 command=lambda i=idx, v=var: self.on_toggle(i, v),
             )
             cb.pack(fill="x", anchor="w")
-            if t["done"]:
-                cb.configure(font=(FONT[0], FONT[1], "overstrike"))
+            # hover：整行浅底，指哪读哪
+            cb.bind("<Enter>", lambda e, c=cb: c.config(bg=HOVER))
+            cb.bind("<Leave>", lambda e, c=cb: c.config(bg=BG2))
 
         self.update_progress()
+        self.root.after_idle(self._sync_scroll)
 
     def update_progress(self) -> None:
         w = self.week
@@ -435,12 +595,99 @@ class App:
         pct = (d / t * 100) if t else 0
         self.bar.config(value=pct)
         self.p_week.config(text=f"本周 {d}/{t}　{pct:.0f}%　·　剩 {t - d} 项 ≈{w.hours_left:g}h")
-        all_t = all_d = 0
-        for n, st in TL.scan_weeks().items():
-            all_t += st["total"]
-            all_d += st["done"]
-        if all_t:
-            self.p_all.config(text=f"累计 {all_d}/{all_t}（{all_d / all_t * 100:.0f}%）")
+        self._update_cards()
+
+    # ---------------- 指标卡
+    def _phase_counts(self, stage: str) -> tuple[int, int]:
+        """某个阶段（P0/P1…）下所有已建周的 完成数 / 总数。"""
+        if not stage:
+            return 0, 0
+        stats = TL.scan_weeks()
+        done = tot = 0
+        for n, info in self.weeks.items():
+            if info.get("stage", "") != stage:
+                continue
+            st = stats.get(n)
+            if not st:
+                continue
+            done += st["done"]
+            tot += st["total"]
+        return done, tot
+
+    def _put_card(self, key: str, label: str, d: int, t: int) -> None:
+        num, tag = self.cards[key]
+        if t:
+            num.config(text=f"{d}/{t}")
+            tag.config(text=f"{label} · {d / t * 100:.0f}%")
+        else:
+            num.config(text="—")
+            tag.config(text=label)
+
+    def _phase_span(self, stage: str):
+        """某个阶段覆盖的起止日期（取该阶段所有周的并集）。"""
+        if not stage:
+            return None
+        ns = [n for n, info in self.weeks.items() if info.get("stage") == stage]
+        if not ns:
+            return None
+        s0, _ = TL.week_range(min(ns))
+        _, e1 = TL.week_range(max(ns))
+        return s0, e1
+
+    def _set_pace(self, key: str, pct: float) -> None:
+        if key not in getattr(self, "pace", {}):
+            return
+        fill, lab = self.pace[key]
+        fill.place_configure(relwidth=max(0.0, min(1.0, pct / 100.0)))
+        lab.config(text=f"{pct:.0f}%")
+
+    def _next_milestone(self, from_n: int):
+        """从第 from_n 周往后找最近的硬节点。"""
+        for n in range(max(1, from_n), TL.TOTAL_WEEKS + 1):
+            ms = self.weeks.get(n, {}).get("milestone", "")
+            if ms and ms not in ("", "—", "-"):
+                s, _ = TL.week_range(n)
+                return n, ms, s
+        return None
+
+    def _update_cards(self) -> None:
+        w = self.week
+        if not w:
+            return
+        info = self.weeks.get(w.n) or {}
+        stage_raw = w.stage or info.get("stage", "")
+        stats = TL.scan_weeks()
+        all_t = sum(s["total"] for s in stats.values())
+        all_d = sum(s["done"] for s in stats.values())
+        ph_d, ph_t = self._phase_counts(stage_raw)
+        self._put_card("week", "本周", w.done, w.total)
+        self._put_card("phase", stage_raw or "本阶段", ph_d, ph_t)
+        self._put_card("all", "全部", all_d, all_t)
+
+        # 节奏条：时间过了多少 vs 任务做了多少
+        span = self._phase_span(stage_raw)
+        if span:
+            s0, e1 = span
+            total = max(1, (e1 - s0).days)
+            passed = max(0, min(total, (date.today() - s0).days))
+            t_pct = passed / total * 100
+        else:
+            t_pct = 0.0
+        self._set_pace("time", t_pct)
+        self._set_pace("task", (ph_d / ph_t * 100) if ph_t else 0.0)
+
+        # 下一个硬节点
+        node = getattr(self, "h_next", None)
+        if node is None:
+            return
+        nm = self._next_milestone(w.n)
+        if nm:
+            n, ms, s = nm
+            days = (s - date.today()).days
+            when = f"还有 {days} 天" if days > 0 else "已到"
+            node.config(text=f"下一个硬节点：W{n:02d} · {ms} · {when}")
+        else:
+            node.config(text="")
 
     # ---------------- 交互
     def on_toggle(self, idx: int, var: tk.BooleanVar) -> None:
@@ -463,25 +710,6 @@ class App:
         s, e = TL.week_range(n)
         self.tree.item(str(n), values=(f"W{n:02d}", self.weeks.get(n, {}).get("date", ""), pct))
 
-    def on_next_week(self) -> None:
-        """在「当前选中的周」之后建下一周；没选中就用今天所在周。"""
-        base = self.week.n if self.week else (self.current_n or 1)
-        n = base + 1
-        if n > TL.TOTAL_WEEKS:
-            messagebox.showinfo("到头了", f"一共 {TL.TOTAL_WEEKS} 周，W{n} 超出范围。")
-            return
-        if TL.week_path(n).exists():
-            self.select_week(n)
-            messagebox.showinfo("已存在", f"W{n:02d} 的任务单已经有了，已跳过去。")
-            return
-        ok, msg = WeekFile.create(n)
-        if ok:
-            self.refresh_weeks()
-            self.select_week(n)
-            messagebox.showinfo("已生成", f"{msg}")
-        else:
-            messagebox.showwarning("没生成", msg)
-
     def on_create(self) -> None:
         if not self.week:
             return
@@ -494,23 +722,26 @@ class App:
         else:
             messagebox.showwarning("没生成", msg)
 
-    def on_snapshot(self) -> None:
-        class A:
-            dry = False
+    def _on_quit(self) -> None:
+        self.root.destroy()
+
+    def on_sync(self) -> None:
+        """一次做完两件事：把勾选进度写回时间表页，再重读界面。"""
+        n = self.week.n if self.week else 1
         try:
+            class A:
+                dry = False
             TL.cmd_progress(A())
         except SystemExit:
-            pass
+            self._flash("时间表没找到，回填跳过")
         except Exception:
             messagebox.showerror("回填失败", traceback.format_exc(limit=3))
             return
-        messagebox.showinfo("已回填", "时间表的「八、实际进度」已刷新。")
-
-    def on_refresh(self) -> None:
-        n = self.week.n if self.week else 1
         self.current_n = TL.current_week()
         self.refresh_weeks()
         self.select_week(n)
+        self._flash("已同步 · 时间表「八、实际进度」已更新")
+        self._flash("已同步 · 时间表「八、实际进度」已更新")
 
     def step(self, delta: int) -> None:
         base = self.week.n if self.week else 1
@@ -537,8 +768,56 @@ class App:
             messagebox.showinfo("路径", str(TL.WEEK_DIR))
 
 
+def _ascii_icon(src: Path) -> Path | None:
+    """把图标复制到纯 ASCII 的临时路径再返回。
+
+    Tk 在 Windows 上用 ANSI 接口读 .ico，中文路径会「调用成功但图标不生效」，
+    而且不报错——实测标题栏一直是 Tk 默认的羽毛。绕开的办法是先复制一份到
+    %TEMP%（路径里只有 ASCII），再从那里加载。
+    """
+    if not src.exists():
+        return None
+    try:
+        src.name.encode("ascii")
+        if str(src).isascii():
+            return src
+    except UnicodeEncodeError:
+        pass
+    try:
+        import shutil
+        dst = Path(os.environ.get("TEMP") or ".") / f"timetable_helper{src.suffix}"
+        if not dst.exists() or dst.stat().st_mtime < src.stat().st_mtime:
+            shutil.copy2(src, dst)
+        return dst
+    except Exception:
+        return None
+
+
 def main() -> None:
+    # 任务栏分组用独立 ID，否则 Windows 会按 pythonw.exe 分组、显示 Python 的图标
+    try:
+        import ctypes
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+            "Ristt.TimetableHelper.2026")
+    except Exception:
+        pass
     root = tk.Tk()
+    # 窗口图标：任务栏和 Alt-Tab 都认这个，不然显示成 Tk 的羽毛
+    ico = HERE / "时间表助手.ico"
+    ico_tk = _ascii_icon(ico)
+    if ico_tk is not None:
+        # 注意：光用 default= 只改「以后新建窗口」的默认图标，当前窗口不变，
+        # 所以必须对当前窗口直接设一次，再补 default 让后续弹窗也用同一个。
+        try:
+            root.iconbitmap(str(ico_tk))
+        except Exception:
+            pass
+        try:
+            root.iconbitmap(default=str(ico_tk))
+        except Exception:
+            pass
+    # 只走 iconbitmap 这一条：iconphoto 的优先级比它高，而 PNG 在 16px 标题栏上
+    # 显示不出来，结果反而回落到 Tk 默认的羽毛图标（实测踩过）。
     try:
         app = App(root)
     except Exception:
