@@ -1,26 +1,26 @@
 {
 	"nodes":[
 		{"id":"af64b9ff1a5a614e","type":"group","x":-480,"y":400,"width":810,"height":100,"label":"核"},
-		{"id":"8ca3d6b0ca6b4d86","type":"group","x":760,"y":540,"width":300,"height":260,"label":"形式"},
+		{"id":"8ca3d6b0ca6b4d86","type":"group","x":720,"y":320,"width":300,"height":260,"label":"形式"},
 		{"id":"0d08999c4b9c7f6c","type":"text","text":"内核","x":-460,"y":420,"width":250,"height":60},
 		{"id":"fa28b9782a9f5f12","type":"text","text":"虚核","x":60,"y":420,"width":250,"height":60},
-		{"id":"bad59781cf18e992","type":"text","text":"增核","x":340,"y":640,"width":250,"height":60},
-		{"id":"470868ca33346086","type":"text","text":"同一","x":780,"y":560,"width":250,"height":60},
-		{"id":"768f38e2248d4a41","type":"text","text":"多元","x":780,"y":720,"width":250,"height":60},
-		{"id":"16e6f2659d9c674f","type":"text","text":"拓原","x":-900,"y":140,"width":250,"height":60},
 		{"id":"f35a056142bdcb65","type":"text","text":"功法","x":-335,"y":860,"width":250,"height":60},
 		{"id":"70e4758d379c0f15","type":"text","text":"炼核","x":340,"y":80,"width":250,"height":60},
-		{"id":"66ce9cf615c6514b","type":"text","text":"天地灵力","x":-389,"y":-29,"width":250,"height":60}
+		{"id":"66ce9cf615c6514b","type":"text","text":"天地灵力","x":-400,"y":-20,"width":250,"height":60},
+		{"id":"470868ca33346086","type":"text","text":"同一","x":740,"y":340,"width":250,"height":60},
+		{"id":"768f38e2248d4a41","type":"text","text":"多元","x":740,"y":500,"width":250,"height":60},
+		{"id":"16e6f2659d9c674f","type":"text","text":"拓原","x":-1080,"y":140,"width":250,"height":60},
+		{"id":"bad59781cf18e992","type":"text","text":"增核","x":340,"y":860,"width":250,"height":60}
 	],
 	"edges":[
 		{"id":"be0378b8ee5a1127","fromNode":"0d08999c4b9c7f6c","fromSide":"right","toNode":"fa28b9782a9f5f12","toSide":"left","toEnd":"none"},
-		{"id":"42a3dc0fc120cad9","fromNode":"af64b9ff1a5a614e","fromSide":"top","toNode":"70e4758d379c0f15","toSide":"left"},
-		{"id":"13e902c6b99b4073","fromNode":"af64b9ff1a5a614e","fromSide":"right","toNode":"bad59781cf18e992","toSide":"left"},
 		{"id":"2142813937401b72","fromNode":"bad59781cf18e992","fromSide":"right","toNode":"8ca3d6b0ca6b4d86","toSide":"left"},
 		{"id":"96b3d3be33359b84","fromNode":"af64b9ff1a5a614e","fromSide":"bottom","toNode":"f35a056142bdcb65","toSide":"top","label":"解构"},
 		{"id":"e23fca87905762ab","fromNode":"8ca3d6b0ca6b4d86","fromSide":"top","toNode":"70e4758d379c0f15","toSide":"right"},
 		{"id":"5903166db62e50b8","fromNode":"af64b9ff1a5a614e","fromSide":"top","toNode":"66ce9cf615c6514b","toSide":"bottom","label":"流失"},
-		{"id":"d606c003dcb589a1","fromNode":"16e6f2659d9c674f","fromSide":"bottom","toNode":"0d08999c4b9c7f6c","toSide":"top","toEnd":"none"},
-		{"id":"c06a77573dfdb94a","fromNode":"66ce9cf615c6514b","fromSide":"left","toNode":"16e6f2659d9c674f","toSide":"top","label":"返回"}
+		{"id":"d606c003dcb589a1","fromNode":"16e6f2659d9c674f","fromSide":"bottom","toNode":"af64b9ff1a5a614e","toSide":"left","label":"投影"},
+		{"id":"c06a77573dfdb94a","fromNode":"66ce9cf615c6514b","fromSide":"top","toNode":"16e6f2659d9c674f","toSide":"top","label":"返回"},
+		{"id":"b24f3a3bdc9328c2","fromNode":"70e4758d379c0f15","fromSide":"left","toNode":"af64b9ff1a5a614e","toSide":"top","label":"增幅"},
+		{"id":"5ed1f5f04add8bbb","fromNode":"af64b9ff1a5a614e","fromSide":"right","toNode":"bad59781cf18e992","toSide":"left"}
 	]
 }
