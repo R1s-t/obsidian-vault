@@ -59,7 +59,7 @@ CUR_BG = "#fff7e6"      # 当前周高亮（bento 浅黄）
 TILE_BLUE = "#eef2ff"   # 阶段统计卡底（bento 浅蓝）
 HOVER = "#fafafa"       # 白底上的 hover
 
-EXAM_DATE = date(2027, 12, 25)      # 初试第一天
+EXAM_DATE = date(2027, 12, 18)      # 初试第一天
 STOP_DATE = date(2027, 9, 6)        # 硬切换日：停项目转初试
 WEEKDAY = ("周一", "周二", "周三", "周四", "周五", "周六", "周日")
 
