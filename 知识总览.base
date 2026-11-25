@@ -1,8 +1,7 @@
 filters:
   and:
-    - 'file.inFolder("knowledge")'
-    - 'file.ext == "md"'
-
+    - file.inFolder("knowledge")
+    - file.ext == "md"
 properties:
   summary:
     displayName: 一句话
@@ -10,7 +9,6 @@ properties:
     displayName: 类型
   file.mtime:
     displayName: 更新
-
 views:
   - type: table
     name: 全部
@@ -19,7 +17,6 @@ views:
       - summary
       - type
       - file.mtime
-
   - type: table
     name: 按类型
     groupBy:
@@ -29,12 +26,11 @@ views:
       - file.name
       - summary
       - file.mtime
-
   - type: table
     name: 主题
     filters:
       and:
-        - 'file.folder == "knowledge/topics"'
+        - file.folder == "knowledge/topics"
     order:
       - file.name
       - summary

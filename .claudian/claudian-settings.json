@@ -187,10 +187,7 @@
   "expandFileEditsByDefault": false,
   "chatViewPlacement": "right-sidebar",
   "enableZenMode": true,
-  "zenModePosition": {
-    "x": 0.0554,
-    "y": 0.8617
-  },
+  "zenModePosition": null,
   "enableDualPane": true,
   "dualPaneSide": "right",
   "restoreTabsOnStartup": true,

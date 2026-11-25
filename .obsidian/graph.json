@@ -6,7 +6,50 @@
   "hideUnresolved": true,
   "showOrphans": true,
   "collapse-color-groups": true,
-  "colorGroups": [],
+  "colorGroups": [
+    {
+      "query": "[type:concept]",
+      "color": {
+        "a": 1,
+        "rgb": 5017087
+      }
+    },
+    {
+      "query": "[type:formula]",
+      "color": {
+        "a": 1,
+        "rgb": 4177775
+      }
+    },
+    {
+      "query": "[type:procedure]",
+      "color": {
+        "a": 1,
+        "rgb": 14725953
+      }
+    },
+    {
+      "query": "[type:pitfall]",
+      "color": {
+        "a": 1,
+        "rgb": 14703708
+      }
+    },
+    {
+      "query": "[type:reference]",
+      "color": {
+        "a": 1,
+        "rgb": 8032166
+      }
+    },
+    {
+      "query": "path:knowledge/topics",
+      "color": {
+        "a": 1,
+        "rgb": 10513632
+      }
+    }
+  ],
   "collapse-display": true,
   "showArrow": false,
   "textFadeMultiplier": 0,
