@@ -10,7 +10,7 @@
 ```
 Inbox/_queue  →  Draft/  →  knowledge/
                  ↑ 用户审
-decision/     （计划、日记、小说、想法、决策）
+decision/     （contest/ postgrad/ schedule/ notes-system/ novel/ 五个项目 + 70 篇平铺 + _tools/）
 _meta/        （附件、模板、库说明）
 ```
 
@@ -76,7 +76,7 @@ _meta/        （附件、模板、库说明）
 ## 不做的事
 
 - 不判断该不该记（那是用户的事）、不出题、不写「学习建议」。
-- `decision/` 的写法规矩还没定，暂时不要改里面的笔记。
+- `decision/` 根上平铺；只有「有交付物、会结束」的项目才建文件夹，目前是 `contest/` `postgrad/` `schedule/` `notes-system/` `novel/`，外加 `_tools/`。不要按主题（个人成长、AI协作这类）建分类目录。
 - 不提交 git、不推送，除非用户明确要求。
 
 ## 风格

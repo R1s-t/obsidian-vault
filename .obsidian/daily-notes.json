@@ -1,5 +1,5 @@
 {
-  "folder": "decision/logs/日记",
+  "folder": "decision",
   "format": "YYYY-MM-DD",
   "template": "记录模板/日记模板"
 }
